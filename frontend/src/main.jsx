@@ -8,9 +8,13 @@ import QueryForm from './components/QueryForm.jsx'
 import AdminQueriesPanel from './components/AdminQueriesPanel.jsx'
 import PublicQueriesTable from './components/PublicQueriesTable.jsx'
 import PolicyOpinions from './components/PolicyOpinions.jsx'
+<<<<<<< HEAD
 // import Login from './components/Login.jsx'
 // import Signup from './components/Signup.jsx'
 
+=======
+import DiscoverData from './components/DiscoverData.jsx'
+>>>>>>> f37ea359ae4b741961853cf9b4a995213e280eb0
 const router = createBrowserRouter([
   {
     path: '/',
@@ -32,6 +36,7 @@ const router = createBrowserRouter([
         path: 'policy',
         element: <PolicyOpinions />
       },
+<<<<<<< HEAD
       // {
       //   path: 'login',
       //   element: <Login />
@@ -40,6 +45,12 @@ const router = createBrowserRouter([
       //   path: 'signup',
       //   element: <Signup />
       // }
+=======
+      {
+        path : 'discover',
+        element : <DiscoverData/>
+      }
+>>>>>>> f37ea359ae4b741961853cf9b4a995213e280eb0
     ]
   }
 ])
