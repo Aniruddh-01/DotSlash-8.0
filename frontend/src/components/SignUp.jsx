@@ -1,9 +1,9 @@
-import SignupImg from "./signup.jpg";
+import SignupImg from "./signup.png";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import axios from "axios";
-import preloaderGIF from "./loader.gif";
+// import preloaderGIF from "./loader.gif";
 import {useNavigate} from 'react-router-dom';
 
 function Signup() {
@@ -74,7 +74,7 @@ function Signup() {
         >
             {preloader && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-                    <img src={preloaderGIF} alt="Loading..." className="w-16 h-16" />
+                    <img src={SignupImg} alt="Loading..." className="w-16 h-16" />
                 </div>
             )}
 
