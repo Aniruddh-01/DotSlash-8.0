@@ -31,7 +31,7 @@ const getAllComplaints = async(req,res,sql)=>{
 const updatePolicyByAdmin = async(req,res,sql) => {
     try {
         const { reference_number , status , reason } = req.body;
-        const response = await sql `UPDATE policies SET status = ${status} and reason = ${reason} WHERE reference_number = ${reference_number}`;
+        const response = await sql `UPDATE policies SET status = ${status}, reason = ${reason} WHERE reference_number = ${reference_number}`;
 
         return res.status(200).json({'message' : 'Policy Updated Successfully'});
     } catch (error) {
