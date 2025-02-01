@@ -14,6 +14,7 @@ import PolicyOpinions from './components/PolicyOpinions.jsx'
 import DiscoverData from './components/DiscoverData.jsx'
 import BudgetTracker from './components/BudgetTracker.jsx'
 import HomePage from './components/HomePage.jsx'
+import EducationBudgetChart from './components/EducationBudgetChart.jsx'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: 'policy',
         element: <PolicyOpinions />
+      },
+      {
+        path: 'edu',
+        element: <EducationBudgetChart />
       },
       // {
       //   path: 'login',

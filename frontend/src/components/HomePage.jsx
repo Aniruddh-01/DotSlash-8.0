@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import DiscoverData from './DiscoverData';
 
 function HomePage() {
   return (
@@ -50,7 +51,7 @@ function HomePage() {
       </div>
 
       {/* Stats Section */}
-      <div className="bg-gray-100 py-16">
+      {/* <div className="bg-gray-100 py-16">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
@@ -67,7 +68,9 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <DiscoverData />
     </div>
   );
 }
