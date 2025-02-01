@@ -8,6 +8,7 @@ import QueryForm from './components/QueryForm.jsx'
 import AdminQueriesPanel from './components/AdminQueriesPanel.jsx'
 import PublicQueriesTable from './components/PublicQueriesTable.jsx'
 import PolicyOpinions from './components/PolicyOpinions.jsx'
+import DiscoverData from './components/DiscoverData.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'policy',
         element: <PolicyOpinions />
+      },
+      {
+        path : 'discover',
+        element : <DiscoverData/>
       }
     ]
   }
