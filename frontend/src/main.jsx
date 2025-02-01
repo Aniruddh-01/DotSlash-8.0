@@ -12,6 +12,7 @@ import PolicyOpinions from './components/PolicyOpinions.jsx'
 // import Signup from './components/Signup.jsx'
 
 import DiscoverData from './components/DiscoverData.jsx'
+import BudgetTracker from './components/BudgetTracker.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path : 'discover',
         element : <DiscoverData/>
+      },
+      {
+        path: 'budget',
+        element: <BudgetTracker />
       }
     ]
   }
