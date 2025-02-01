@@ -27,7 +27,7 @@ app.get('/api/states', async (req, res) => {
 
 app.post('/submit-complaint',(req,res) => submitComplaints(req,res,sql));
 app.get('/all-complaints',(req,res) => getAllComplaints(req,res,sql));
-app.post('/update-policy' , (req,res) => updatePolicyByAdmin(req,res,sql));
+app.put('/update-policy' , (req,res) => updatePolicyByAdmin(req,res,sql));  // Changed from POST to PUT
 
 app.listen(PORT,()=>{
     console.log('Server is ready!');

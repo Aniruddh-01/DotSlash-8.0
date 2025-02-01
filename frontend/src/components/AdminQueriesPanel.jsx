@@ -30,29 +30,38 @@ function AdminQueriesPanel() {
 
   const handleUpdate = async (reference_number, status, reason) => {
     try {
-      console.log("Updating policy with:", { reference_number, status, reason });
-  
       const response = await fetch('http://localhost:3000/update-policy', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({ reference_number, status, reason }),
+        body: JSON.stringify({ reference_number, status, reason })
       });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Update failed');
+
+      // Log the raw response for debugging
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
+      // Try to parse as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`Invalid JSON response: ${responseText}`);
       }
-  
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Update failed');
+      }
+
       fetchQueries();
       alert('Policy updated successfully!');
     } catch (error) {
-      console.error("Update error:", error);
+      console.error("Update error details:", error);
       alert('Failed to update policy: ' + error.message);
     }
   };
-  
 
   const QueryBlock = ({ query }) => {
     const [status, setStatus] = useState(query.status || 'Proposed');
