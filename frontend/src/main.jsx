@@ -13,6 +13,7 @@ import PolicyOpinions from './components/PolicyOpinions.jsx'
 
 import DiscoverData from './components/DiscoverData.jsx'
 import BudgetTracker from './components/BudgetTracker.jsx'
+import HomePage from './components/Home.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <QueryForm />
+        element: <HomePage />
       },
       {
         path: 'admin',
