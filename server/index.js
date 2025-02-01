@@ -5,6 +5,7 @@ import { neon } from "@neondatabase/serverless";
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { submitComplaints , getAllComplaints , updatePolicyByAdmin } from './Complaints.js';
+import { UserSignUp } from './user.js';
 
 dotenv.config();
 const PORT = 3000;
