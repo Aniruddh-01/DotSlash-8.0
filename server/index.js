@@ -5,6 +5,7 @@ import { neon } from "@neondatabase/serverless";
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { submitComplaints , getAllComplaints , updatePolicyByAdmin } from './Complaints.js';
+import { UserSignUp } from './user.js';
 
 dotenv.config();
 const PORT = 3000;
@@ -28,6 +29,7 @@ app.get('/api/states', async (req, res) => {
 app.post('/submit-complaint',(req,res) => submitComplaints(req,res,sql));
 app.get('/all-complaints',(req,res) => getAllComplaints(req,res,sql));
 app.post('/update-policy' , (req,res) => updatePolicyByAdmin(req,res,sql));
+app.post('/signup' , (req,res) => UserSignUp(req,res,sql));
 
 app.listen(PORT,()=>{
     console.log('Server is ready!');
