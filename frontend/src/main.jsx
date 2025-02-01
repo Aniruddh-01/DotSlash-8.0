@@ -23,6 +23,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: <HomePage /> 
+      },
+      {
+        path: 'query',
         element: <QueryForm />
       },
       {
