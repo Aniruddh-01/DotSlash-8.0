@@ -7,7 +7,7 @@ import Layout from './components/Layout.jsx'
 import QueryForm from './components/QueryForm.jsx'
 import AdminQueriesPanel from './components/AdminQueriesPanel.jsx'
 import PublicQueriesTable from './components/PublicQueriesTable.jsx'
-
+import PolicyOpinions from './components/PolicyOpinions.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -24,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: 'public',
         element: <PublicQueriesTable />
+      },
+      {
+        path: 'policy',
+        element: <PolicyOpinions />
       }
     ]
   }
