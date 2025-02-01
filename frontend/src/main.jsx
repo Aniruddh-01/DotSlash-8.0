@@ -19,7 +19,7 @@ import EducationBudgetChart from './components/EducationBudgetChart.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <Layout />, 
     children: [
       {
         path: '/',
