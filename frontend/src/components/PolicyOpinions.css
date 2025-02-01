@@ -24,6 +24,18 @@
   background-color: #ffffff;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.vote-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vote-btn.voted {
+  background-color: #e0e0e0;
+  border: 2px solid #007bff;
 }
 
 .comment-form {

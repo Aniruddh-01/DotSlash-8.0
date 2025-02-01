@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PolicyOpinions.css';
 
 function PolicyOpinions() {
   // States for managing data
   const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0 });
+  const [userVote, setUserVote] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
 
@@ -13,12 +14,25 @@ function PolicyOpinions() {
     description: "This policy aims to reduce carbon emissions by 30% by 2025 through implementation of renewable energy sources."
   };
 
+  // Load user's vote from localStorage on component mount
+  useEffect(() => {
+    const savedVote = localStorage.getItem(`policy-${policy.id}-vote`);
+    if (savedVote) {
+      setUserVote(savedVote);
+    }
+  }, []);
+
   // Handle votes
   const handleVote = (type) => {
+    if (userVote) return; // Prevent multiple votes
+
     setVotes(prev => ({
       ...prev,
       [type]: prev[type] + 1
     }));
+    
+    setUserVote(type);
+    localStorage.setItem(`policy-${policy.id}-vote`, type);
   };
 
   // Handle comment submission
@@ -40,10 +54,18 @@ function PolicyOpinions() {
 
       {/* Voting Section */}
       <div className="voting-section">
-        <button onClick={() => handleVote('upvotes')} className="vote-btn">
+        <button 
+          onClick={() => handleVote('upvotes')} 
+          className={`vote-btn ${userVote === 'upvotes' ? 'voted' : ''}`}
+          disabled={userVote !== null}
+        >
           👍 {votes.upvotes}
         </button>
-        <button onClick={() => handleVote('downvotes')} className="vote-btn">
+        <button 
+          onClick={() => handleVote('downvotes')} 
+          className={`vote-btn ${userVote === 'downvotes' ? 'voted' : ''}`}
+          disabled={userVote !== null}
+        >
           👎 {votes.downvotes}
         </button>
       </div>
@@ -68,6 +90,7 @@ function PolicyOpinions() {
           </div>
         ))}
       </div>
+      
     </div>
   );
 }
