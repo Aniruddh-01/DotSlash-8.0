@@ -34,8 +34,9 @@
 }
 
 .vote-btn.voted {
-  background-color: #e0e0e0;
-  border: 2px solid #007bff;
+  background-color: #007bff;
+  color: white;
+  border: 2px solid #007928;
 }
 
 .comment-form {
@@ -70,4 +71,57 @@
   padding: 15px;
   border-radius: 4px;
   margin-bottom: 10px;
+}
+.policy-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.policy-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.voting-section {
+  display: flex;
+  gap: 10px;
+}
+
+.vote-btn {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: #e0e0e0;
+}
+
+.vote-btn.voted {
+  background: #4caf50;
+  color: white;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.submit-btn {
+  padding: 8px;
+  background: hsl(222, 100%, 57%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+  padding: 10px 15px;
 }
