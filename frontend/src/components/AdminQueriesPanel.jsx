@@ -28,36 +28,38 @@ function AdminQueriesPanel() {
     }
   };
 
-  const handleUpdate = async (queryId, updatedData) => {
+  const handleUpdate = async (reference_number, status, reason) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/queries/${queryId}`, {
+      console.log("Updating policy with:", { reference_number, status, reason });
+  
+      const response = await fetch('http://localhost:3000/update-policy', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedData)
+        body: JSON.stringify({ reference_number, status, reason }),
       });
-
-      if (!response.ok) throw new Error('Update failed');
-      
-      // Refresh queries after update
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Update failed');
+      }
+  
       fetchQueries();
-      alert('Query updated successfully!');
+      alert('Policy updated successfully!');
     } catch (error) {
-      alert('Failed to update query: ' + error.message);
+      console.error("Update error:", error);
+      alert('Failed to update policy: ' + error.message);
     }
   };
+  
 
   const QueryBlock = ({ query }) => {
     const [status, setStatus] = useState(query.status || 'Proposed');
     const [reason, setReason] = useState(query.reason || '');
 
     const handleSubmit = () => {
-      handleUpdate(query.id, {
-        ...query,
-        status,
-        reason
-      });
+      handleUpdate(query.reference_number, status, reason);
     };
 
     return (
@@ -132,7 +134,7 @@ function AdminQueriesPanel() {
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl font-bold mb-6">Admin Query Management</h1>
       {queries.map((query) => (
-        <QueryBlock key={query.id} query={query} />
+        <QueryBlock key={query.reference_number} query={query} />
       ))}
     </div>
   );
