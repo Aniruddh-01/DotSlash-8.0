@@ -30,14 +30,44 @@ const getAllComplaints = async(req,res,sql)=>{
 
 const updatePolicyByAdmin = async(req,res,sql) => {
     try {
-        const { reference_number , status , reason } = req.body;
-        const response = await sql `UPDATE policies SET status = ${status}, reason = ${reason} WHERE reference_number = ${reference_number}`;
+        const { reference_number, status, reason } = req.body;
+        console.log('Received update request:', { reference_number, status, reason });
 
-        return res.status(200).json({'message' : 'Policy Updated Successfully'});
+        if (!reference_number || !status) {
+            return res.status(400).json({ 
+                message: 'Reference number and status are required' 
+            });
+        }
+
+        const response = await sql`
+            UPDATE policies 
+            SET status = ${status}, 
+                reason = ${reason},
+                last_action_date = CURRENT_DATE
+            WHERE reference_number = ${reference_number}
+            RETURNING *
+        `;
+
+        console.log('Update response:', response);
+
+        if (response.length === 0) {
+            return res.status(400).json({ 
+                message: 'Update failed' 
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Policy Updated Successfully',
+            policy: response[0]
+        });
+
     } catch (error) {
-        console.log(error);
+        console.error('Server error:', error);
+        return res.status(500).json({ 
+            message: 'Server error while updating policy',
+            error: error.message 
+        });
     }
 }
-
 
 export { submitComplaints , getAllComplaints , updatePolicyByAdmin };
