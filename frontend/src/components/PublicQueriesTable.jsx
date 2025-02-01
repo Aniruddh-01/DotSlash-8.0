@@ -1,7 +1,9 @@
+// frontend/src/components/PublicQueriesTable.jsx
 import React, { useState, useEffect } from "react";
 
 function PublicQueriesTable() {
   const [queries, setQueries] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,9 +23,20 @@ function PublicQueriesTable() {
     fetchQueries();
   }, []);
 
-
-  //   if (loading) return <div className="text-center p-4">Loading...</div>;
-  //   if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
+  const toggleRow = async (referenceId) => {
+    if (expandedRows.includes(referenceId)) {
+      setExpandedRows(expandedRows.filter(id => id !== referenceId));
+    } else {
+      try {
+        const response = await fetch(`http://localhost:3000/query-status/${referenceId}`);
+        const data = await response.json();
+        setQueries(queries.map(query => query.referenceId === referenceId ? { ...query, ...data } : query));
+        setExpandedRows([...expandedRows, referenceId]);
+      } catch (err) {
+        console.error("Failed to fetch query status:", err);
+      }
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -51,23 +64,43 @@ function PublicQueriesTable() {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Last Action Date
             </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {queries.map((query) => (
-            <tr key={query.referenceId} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                {query.reference_number}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">{query.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{query.issue_area}</td>
-              <td className="px-6 py-4">{query.summary}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{query.state_name}</td>
-              <td className="px-6 py-4">{query.address}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {new Date(query.last_action_date).toLocaleDateString()}
-              </td>
-            </tr>
+            <React.Fragment key={query.referenceId}>
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {query.reference_number}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{query.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{query.issue_area}</td>
+                <td className="px-6 py-4">{query.summary}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{query.state_name}</td>
+                <td className="px-6 py-4">{query.address}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {new Date(query.last_action_date).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button onClick={() => toggleRow(query.referenceId)} className="text-blue-500">
+                    {expandedRows.includes(query.referenceId) ? "-" : "+"}
+                  </button>
+                </td>
+              </tr>
+              {expandedRows.includes(query.referenceId) && (
+                <tr className="bg-gray-50 transition-all duration-300 ease-in-out">
+                  <td colSpan="8" className="px-6 py-4">
+                    <div className="p-4 border rounded-md">
+                      <p><strong>Status:</strong> {query.status}</p>
+                      <p><strong>Reason:</strong> {query.reason}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>
