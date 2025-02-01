@@ -13,7 +13,9 @@ import PolicyOpinions from './components/PolicyOpinions.jsx'
 
 import DiscoverData from './components/DiscoverData.jsx'
 import BudgetTracker from './components/BudgetTracker.jsx'
-import HomePage from './components/Home.jsx'
+import HomePage from './components/HomePage.jsx'
+import EducationBudgetChart from './components/EducationBudgetChart.jsx'
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -21,7 +23,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <HomePage />
+        element: <QueryForm />
       },
       {
         path: 'admin',
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: 'policy',
         element: <PolicyOpinions />
+      },
+      {
+        path: 'edu',
+        element: <EducationBudgetChart />
       },
       // {
       //   path: 'login',

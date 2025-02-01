@@ -11,7 +11,7 @@ import science from './science.png';
 function DiscoverData() {
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-center mb-8">Discover Datasets By</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">Discover Budgets By</h1>
             
             {/* Sidebar or Filter Section */}
             <div className="flex flex-col sm:flex-row gap-8">
