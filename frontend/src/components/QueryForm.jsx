@@ -5,13 +5,12 @@ function QueryForm() {
   const [formData, setFormData] = useState({
     name: "",
     issueArea: "",
-    state: "",
-    address: "",
     queryDescription: "", // added to store the query description
   });
   const [showCustomIssue, setShowCustomIssue] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [pincode, setPincode] = useState(""); // New state for pincode
 
   const issueAreas = [
     "Education",
@@ -45,6 +44,10 @@ function QueryForm() {
     if (name === 'issueArea') {
       setShowCustomIssue(value === 'Others');
     }
+    if (name === 'pincode') { // Handle pincode change
+      setPincode(value);
+      // No need to call fetchLocationData here, it will be called on form submission
+    }
     setFormData({
       ...formData,
       [name]: value,
@@ -56,22 +59,33 @@ function QueryForm() {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // Adjust form data to match backend expectations
+    // Fetch location data based on pincode before submitting
+    const locationData = await fetchLocationData(pincode);
+    if (!locationData) {
+      setSubmitError("Failed to fetch location data.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const [ state, address ] = locationData; // Destructure the fetched data
+
     const dataToSubmit = {
       name: formData.name,
-      issue_area: formData.issueArea,  // Issue area adjusted
-      summary: formData.queryDescription,  // Query description adjusted to summary
-      state_name: formData.state,
-      address: formData.address,
+      issue_area: formData.issueArea,
+      summary: formData.queryDescription,
+      state_name: state, // Use fetched state
+      address: address // Use the first post office name as address
     };
+    console.log(dataToSubmit)
 
+    // Submit the data to the backend
     try {
       const response = await fetch('http://localhost:3000/submit-complaint', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSubmit)  // Send the adjusted form data
+        body: JSON.stringify(dataToSubmit)
       });
 
       if (!response.ok) {
@@ -81,10 +95,10 @@ function QueryForm() {
       // Reset form
       setFormData({
         name: "",
-        issueArea: "",
-        state: "",
+        issue_area: "",
+        summary: "", // reset query description
+        state_name: "",
         address: "",
-        queryDescription: "", // reset query description
       });
       setShowCustomIssue(false);
       alert('Query submitted successfully!');
@@ -94,6 +108,29 @@ function QueryForm() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const fetchLocationData = async (pincode) => {
+    if (pincode.length === 6) { // Assuming Indian pincode format
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`); // Using PostalPincode API
+        const data = await response.json();
+        if (data[0].Status === "Success") {
+          console.log(data[0].PostOffice[0].State);
+          const  State  = data[0].PostOffice[0].State; // Get the state from the first post office
+
+          const address = data[0].PostOffice[0].Name; // Use the first post office name as address
+          return [State, address] ; // Return state and address
+        } else {
+          console.error("Error fetching location data:", data[0].Message);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+        return null;
+      }
+    }
+    return null;
   };
 
   return (
@@ -115,41 +152,6 @@ function QueryForm() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="state" className="mb-2 font-medium text-gray-700">
-              State
-            </label>
-            <select
-              id="state"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              required
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
-            >
-              <option value="">Select a state</option>
-              {states.map((state) => (
-                <option key={state.state_id} value={state.state_name}>
-                  {state.state_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="address" className="mb-2 font-medium text-gray-700">
-              Address
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-              rows="3"
               className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
@@ -211,6 +213,21 @@ function QueryForm() {
               rows="4"
               className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
             ></textarea>
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="pincode" className="mb-2 font-medium text-gray-700">
+              Pincode
+            </label>
+            <input
+              type="text"
+              id="pincode"
+              name="pincode"
+              value={pincode}
+              onChange={handleChange}
+              required
+              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
+            />
           </div>
 
           <button 

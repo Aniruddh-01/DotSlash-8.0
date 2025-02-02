@@ -1,109 +1,145 @@
-// frontend/src/components/PublicQueriesTable.jsx
 import React, { useState, useEffect } from "react";
+
+const issueAreas = [
+  "Education", "Healthcare", "Environment", "Economy",
+  "Social Justice", "Technology", "Infrastructure",
+  "Defense & Security", "Housing", "Immigration", "Others"
+];
 
 function PublicQueriesTable() {
   const [queries, setQueries] = useState([]);
-  const [expandedRows, setExpandedRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [addressSearchTerm, setAddressSearchTerm] = useState("");
+  const [issueArea, setIssueArea] = useState("All");
 
   useEffect(() => {
     const fetchQueries = async () => {
       try {
         const response = await fetch("http://localhost:3000/all-complaints");
         const data = await response.json();
-        console.log(data.policies_arr);
         setQueries(data.policies_arr);
-        setLoading(false);
       } catch (err) {
-        setError("Failed to fetch queries");
-        setLoading(false);
+        console.error("Failed to fetch queries");
       }
     };
     fetchQueries();
   }, []);
 
-  const toggleRow = async (referenceId) => {
-    if (expandedRows.includes(referenceId)) {
-      setExpandedRows(expandedRows.filter(id => id !== referenceId));
-    } else {
-      try {
-        const response = await fetch(`http://localhost:3000/query-status/${referenceId}`);
-        const data = await response.json();
-        setQueries(queries.map(query => query.referenceId === referenceId ? { ...query, ...data } : query));
-        setExpandedRows([...expandedRows, referenceId]);
-      } catch (err) {
-        console.error("Failed to fetch query status:", err);
-      }
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "proposed": return "text-blue-500";
+      case "ongoing": return "text-yellow-500";
+      case "blocked": return "text-red-500";
+      case "approved": return "text-green-500";
+      case "rejected": return "text-gray-500";
+      default: return "text-black";
     }
   };
 
+  const filteredQueries = queries.filter(query =>
+    query.state_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    query.address.toLowerCase().includes(addressSearchTerm.toLowerCase()) &&
+    (issueArea === "All" || query.issue_area === issueArea)
+  );
+
+  const toggleRow = (referenceNumber) => {
+    setExpandedRow(expandedRow === referenceNumber ? null : referenceNumber);
+  };
+
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Reference ID
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Issue Area
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Description
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              State
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Address
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Last Action Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {queries.map((query) => (
-            <React.Fragment key={query.referenceId}>
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {query.reference_number}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{query.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{query.issue_area}</td>
-                <td className="px-6 py-4">{query.summary}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{query.state_name}</td>
-                <td className="px-6 py-4">{query.address}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {new Date(query.last_action_date).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button onClick={() => toggleRow(query.referenceId)} className="text-blue-500">
-                    {expandedRows.includes(query.referenceId) ? "-" : "+"}
-                  </button>
-                </td>
-              </tr>
-              {expandedRows.includes(query.referenceId) && (
-                <tr className="bg-gray-50 transition-all duration-300 ease-in-out">
-                  <td colSpan="8" className="px-6 py-4">
-                    <div className="p-4 border rounded-md">
-                      <p><strong>Status:</strong> {query.status}</p>
-                      <p><strong>Reason:</strong> {query.reason}</p>
-                    </div>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Search Filters */}
+      <div className="flex flex-wrap items-center gap-4 mb-6 bg-white p-4 shadow-md rounded-lg">
+        <input
+          type="text"
+          placeholder="Search by State"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border rounded p-3 w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <input
+          type="text"
+          placeholder="Search by Address"
+          value={addressSearchTerm}
+          onChange={(e) => setAddressSearchTerm(e.target.value)}
+          className="border rounded p-3 w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <select
+          value={issueArea}
+          onChange={(e) => setIssueArea(e.target.value)}
+          className="border rounded p-3 w-64 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+        >
+          <option value="All">All</option>
+          {issueAreas.map(area => (
+            <option key={area} value={area}>{area}</option>
+          ))}
+        </select>
+        <button
+          onClick={() => { setSearchTerm(""); setAddressSearchTerm(""); setIssueArea("All"); }}
+          className="bg-red-500 text-white px-5 py-3 rounded-lg hover:bg-red-600 transition"
+        >
+          Reset
+        </button>
+      </div>
+
+      {/* Table Section */}
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-full border border-gray-300">
+          <thead className="bg-gray-200 text-gray-600 text-sm uppercase">
+            <tr>
+              <th className="px-6 py-3 text-left border-b">Reference ID</th>
+              <th className="px-6 py-3 text-left border-b">Name</th>
+              <th className="px-6 py-3 text-left border-b">Issue Area</th>
+              <th className="px-6 py-3 text-left border-b">Description</th>
+              <th className="px-6 py-3 text-left border-b">State</th>
+              <th className="px-6 py-3 text-left border-b">Address</th>
+              <th className="px-6 py-3 text-left border-b">Last Action Date</th>
+              <th className="px-6 py-3 text-left border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredQueries.map(query => (
+              <React.Fragment key={query.reference_number}>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-6 py-4 border">{query.reference_number}</td>
+                  <td className="px-6 py-4 border">{query.name}</td>
+                  <td className="px-6 py-4 border">{query.issue_area}</td>
+                  <td className="px-6 py-4 border">{query.summary}</td>
+                  <td className="px-6 py-4 border">{query.state_name}</td>
+                  <td className="px-6 py-4 border">{query.address}</td>
+                  <td className="px-6 py-4 border">
+                    {new Date(query.last_action_date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 border">
+                    <button
+                      onClick={() => toggleRow(query.reference_number)}
+                      className="text-blue-500 text-2xl font-bold p-2 hover:text-blue-700 transition"
+                    >
+                      {expandedRow === query.reference_number ? "−" : "+"}
+                    </button>
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                {expandedRow === query.reference_number && (
+                  <tr className="bg-gray-50 transition-all duration-300 ease-in-out">
+                    <td colSpan="8" className="px-6 py-4 border">
+                      <div className="p-4 border rounded-md bg-white shadow">
+                        <p>
+                          <strong>Status:</strong>{" "}
+                          <span className={`${getStatusColor(query.status)} font-semibold`}>
+                            {query.status}
+                          </span>
+                        </p>
+                        <p><strong>Reason:</strong> {query.reason}</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
