@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 
 function QueryForm() {
-  const [states, setStates] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     issueArea: "",
-    queryDescription: "", // added to store the query description
+    queryDescription: "",
   });
   const [showCustomIssue, setShowCustomIssue] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const [pincode, setPincode] = useState(""); // New state for pincode
+  const [pincode, setPincode] = useState("");
 
   const issueAreas = [
     "Education",
@@ -23,30 +22,13 @@ function QueryForm() {
     "Defense & Security",
     "Housing",
     "Immigration",
-    "Others"
+    "Others",
   ];
-
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/states');
-        const data = await response.json();
-        setStates(data.states);
-      } catch (error) {
-        console.error("Error fetching states:", error);
-      }
-    };
-    fetchStates();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'issueArea') {
-      setShowCustomIssue(value === 'Others');
-    }
-    if (name === 'pincode') { // Handle pincode change
-      setPincode(value);
-      // No need to call fetchLocationData here, it will be called on form submission
+    if (name === "issueArea") {
+      setShowCustomIssue(value === "Others");
     }
     setFormData({
       ...formData,
@@ -54,95 +36,38 @@ function QueryForm() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitError(null);
 
-    // Fetch location data based on pincode before submitting
-    const locationData = await fetchLocationData(pincode);
-    if (!locationData) {
-      setSubmitError("Failed to fetch location data.");
+    setTimeout(() => {
+      alert("Query submitted successfully!");
       setIsSubmitting(false);
-      return;
-    }
-
-    const [ state, address ] = locationData; // Destructure the fetched data
-
-    const dataToSubmit = {
-      name: formData.name,
-      issue_area: formData.issueArea,
-      summary: formData.queryDescription,
-      state_name: state, // Use fetched state
-      address: address // Use the first post office name as address
-    };
-    console.log(dataToSubmit)
-
-    // Submit the data to the backend
-    try {
-      const response = await fetch('http://localhost:3000/submit-complaint', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSubmit)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit query');
-      }
-
-      // Reset form
       setFormData({
         name: "",
-        issue_area: "",
-        summary: "", // reset query description
-        state_name: "",
-        address: "",
+        issueArea: "",
+        queryDescription: "",
       });
-      setShowCustomIssue(false);
-      alert('Query submitted successfully!');
-
-    } catch (error) {
-      setSubmitError(error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const fetchLocationData = async (pincode) => {
-    if (pincode.length === 6) { // Assuming Indian pincode format
-      try {
-        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`); // Using PostalPincode API
-        const data = await response.json();
-        if (data[0].Status === "Success") {
-          console.log(data[0].PostOffice[0].State);
-          const  State  = data[0].PostOffice[0].State; // Get the state from the first post office
-
-          const address = data[0].PostOffice[0].Name; // Use the first post office name as address
-          return [State, address] ; // Return state and address
-        } else {
-          console.error("Error fetching location data:", data[0].Message);
-          return null;
-        }
-      } catch (error) {
-        console.error("Error fetching location data:", error);
-        return null;
-      }
-    }
-    return null;
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md border border-gray-300">
-        <h1 className="text-4xl text-center font-bold mb-6 text-gray-800">
-          Query Form
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        background: "linear-gradient(to bottom,rgb(222, 150, 78), #ffffff)",
+      }}
+    >
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-200">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Submit Your Query
         </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="name" className="mb-2 font-medium text-gray-700">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Name
             </label>
             <input
@@ -152,13 +77,14 @@ function QueryForm() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
             />
           </div>
-          <div className="flex flex-col">
+
+          <div>
             <label
               htmlFor="issueArea"
-              className="mb-2 font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Issue Area
             </label>
@@ -168,7 +94,7 @@ function QueryForm() {
               value={formData.issueArea}
               onChange={handleChange}
               required
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
             >
               <option value="">Select Issue Area</option>
               {issueAreas.map((area) => (
@@ -180,27 +106,29 @@ function QueryForm() {
           </div>
 
           {showCustomIssue && (
-            <div className="flex flex-col">
-              <label htmlFor="customIssue" className="mb-2 font-medium text-gray-700">
-                Specify Issue Area
+            <div>
+              <label
+                htmlFor="customIssue"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Specify Custom Issue Area
               </label>
               <input
                 type="text"
                 id="customIssue"
                 name="issueArea"
-                value={formData.issueArea === 'Others' ? '' : formData.issueArea}
+                value={formData.issueArea}
                 onChange={handleChange}
                 required
-                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
-                placeholder="Enter custom issue area"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
               />
             </div>
           )}
 
-          <div className="flex flex-col">
+          <div>
             <label
               htmlFor="queryDescription"
-              className="mb-2 font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Query Description
             </label>
@@ -211,12 +139,15 @@ function QueryForm() {
               onChange={handleChange}
               required
               rows="4"
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
-            ></textarea>
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
+            />
           </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="pincode" className="mb-2 font-medium text-gray-700">
+          <div>
+            <label
+              htmlFor="pincode"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Pincode
             </label>
             <input
@@ -224,24 +155,24 @@ function QueryForm() {
               id="pincode"
               name="pincode"
               value={pincode}
-              onChange={handleChange}
+              onChange={(e) => setPincode(e.target.value)}
               required
-              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
             />
           </div>
 
-          <button 
+          <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition-colors disabled:bg-blue-300"
+            className="w-full py-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
 
           {submitError && (
-            <div className="text-red-500 text-sm mt-2">
+            <p className="text-red-500 text-sm mt-2 text-center">
               {submitError}
-            </div>
+            </p>
           )}
         </form>
       </div>

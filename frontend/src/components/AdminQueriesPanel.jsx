@@ -18,7 +18,7 @@ function AdminQueriesPanel() {
 
   const fetchQueries = async () => {
     try {
-      const response = await fetch('http://localhost:3000/all-complaints');
+      const response = await fetch('https://dotslash-8-0-1.onrender.com/all-complaints');
       const data = await response.json();
       setQueries(data.policies_arr);
       setLoading(false);
@@ -30,7 +30,7 @@ function AdminQueriesPanel() {
 
   const handleUpdate = async (reference_number, status, reason) => {
     try {
-      const response = await fetch('http://localhost:3000/update-policy', {
+      const response = await fetch('https://dotslash-8-0-1.onrender.com/update-policy', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
