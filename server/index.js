@@ -4,7 +4,7 @@ import cors from 'cors';
 import { neon } from "@neondatabase/serverless";
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { submitComplaints , getAllComplaints , updatePolicyByAdmin } from './Complaints.js';
+import { submitComplaints, getAllComplaints, updatePolicyByAdmin, addPolicyComment, getPolicyComments } from './Complaints.js';
 // import { UserSignUp } from './user.js';
 
 dotenv.config();
@@ -29,6 +29,10 @@ app.get('/api/states', async (req, res) => {
 app.post('/submit-complaint',(req,res) => submitComplaints(req,res,sql));
 app.get('/all-complaints',(req,res) => getAllComplaints(req,res,sql));
 app.put('/update-policy' , (req,res) => updatePolicyByAdmin(req,res,sql));  // Changed from POST to PUT
+
+// Add new routes
+app.post('/policy-comment', (req, res) => addPolicyComment(req, res, sql));
+app.get('/policy-comments/:policyId', (req, res) => getPolicyComments(req, res, sql));
 
 app.listen(PORT,()=>{
     console.log('Server is ready!');

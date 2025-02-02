@@ -71,4 +71,32 @@ const updatePolicyByAdmin = async(req,res,sql) => {
     }
 }
 
-export { submitComplaints , getAllComplaints , updatePolicyByAdmin };
+const addPolicyComment = async (req, res, sql) => {
+    try {
+        const { policyId, comment } = req.body;
+        const result = await sql`
+            INSERT INTO policy_comments (policy_id, comment)
+            VALUES (${policyId}, ${comment})
+            RETURNING *
+        `;
+        res.status(201).json(result[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getPolicyComments = async (req, res, sql) => {
+    try {
+        const { policyId } = req.params;
+        const comments = await sql`
+            SELECT * FROM policy_comments 
+            WHERE policy_id = ${policyId}
+            ORDER BY created_at DESC
+        `;
+        res.status(200).json(comments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export { submitComplaints, getAllComplaints, updatePolicyByAdmin, addPolicyComment, getPolicyComments };
