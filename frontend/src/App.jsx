@@ -10,6 +10,7 @@ function App() {
 
   return (
     <>
+    
       {/* <QueryForm /> */}
       {/* <PublicQueriesTable /> */}
       <AdminQueriesPanel/>
