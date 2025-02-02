@@ -14,27 +14,9 @@ const sql = neon(process.env.DB_URL);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
-
-// CORS Configuration
-const corsOptions = {
-  origin: [
-    'https://dot-slash-8-0.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:5173'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-// Apply CORS middleware with options
-app.use(cors(corsOptions));
-
-// Add OPTIONS handling for preflight requests
-app.options('*', cors(corsOptions));
-
-app.use(cors());
+app.use(cors({
+  origin : '*'
+}));
 
 app.get('/api/states', async (req, res) => {
     try {
