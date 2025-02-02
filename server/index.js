@@ -14,6 +14,26 @@ const sql = neon(process.env.DB_URL);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
+
+// CORS Configuration
+const corsOptions = {
+  origin: [
+    'https://dot-slash-8-0.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+// Apply CORS middleware with options
+app.use(cors(corsOptions));
+
+// Add OPTIONS handling for preflight requests
+app.options('*', cors(corsOptions));
+
 app.use(cors());
 
 app.get('/api/states', async (req, res) => {
@@ -33,6 +53,15 @@ app.put('/update-policy' , (req,res) => updatePolicyByAdmin(req,res,sql));  // C
 // Add new routes
 app.post('/policy-comment', (req, res) => addPolicyComment(req, res, sql));
 app.get('/policy-comments/:policyId', (req, res) => getPolicyComments(req, res, sql));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
 
 app.listen(PORT,()=>{
     console.log('Server is ready!');
