@@ -25,6 +25,21 @@ function PolicyCard({ policy }) {
     }
   }, [userVote]);
 
+  // Fetch comments from server
+  useEffect(() => {
+    fetchComments();
+  }, [policy.id]);
+
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/policy-comments/${policy.id}`);
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
   // Handle voting logic
   const handleVote = (type) => {
     if (userVote === type) {
@@ -40,11 +55,25 @@ function PolicyCard({ policy }) {
   };
 
   // Handle comment submission
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      setComments([...comments, { id: Date.now(), text: newComment }]);
-      setNewComment('');
+    try {
+      const response = await fetch('http://localhost:3000/policy-comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          policyId: policy.id,
+          comment: newComment
+        }),
+      });
+      if (response.ok) {
+        setNewComment('');
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
     }
   };
 
@@ -87,7 +116,8 @@ function PolicyCard({ policy }) {
         <h3 className='text-xl'>Suggestions</h3>
         {comments.map(comment => (
           <div key={comment.id} className="comment">
-            <p className='bg-gray-100 p-3 rounded-2xl'>{comment.text}</p>
+            <p className='bg-gray-100 p-3 rounded-2xl'>{comment.comment}</p>
+            <small>{new Date(comment.created_at).toLocaleDateString()}</small>
           </div>
         ))}
       </div>
