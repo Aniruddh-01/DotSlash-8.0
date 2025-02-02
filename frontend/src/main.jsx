@@ -11,7 +11,6 @@ import PolicyOpinions from './components/PolicyOpinions.jsx'
 // import Login from './components/Login.jsx'
 // import Signup from './components/Signup.jsx'
 import Chatbot from './components/chatbot.jsx'
-
 import DiscoverData from './components/DiscoverData.jsx'
 import BudgetTracker from './components/BudgetTracker.jsx'
 import HomePage from './components/HomePage.jsx'
