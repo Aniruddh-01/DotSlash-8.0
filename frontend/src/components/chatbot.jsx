@@ -10,7 +10,7 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const apiKey = "AIzaSyCm9AFhAXHLZ6K6NqVTPtzvlOiCOx9QEdw"; // Replace with your API key
+  const apiKey = "--"; // Replace with your API key
 
   const sendMessage = async () => {
     if (!input.trim()) return;
